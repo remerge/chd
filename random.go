@@ -12,8 +12,8 @@ func pickRandom(slice [][]byte) (v []byte) {
 		return v
 	}
 
-	for l, r := from-1, from+1; l >= 0 || r < len(slice); l, r = l-1, r+1 {
-		if r < len(slice) && len(slice[r]) > 0 {
+	for l, r := from-1, from+1; l >= 0 || r < length; l, r = l-1, r+1 {
+		if r < length && len(slice[r]) > 0 {
 			return slice[r]
 		}
 		if l >= 0 && len(slice[l]) > 0 {
