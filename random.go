@@ -12,26 +12,13 @@ func pickRandom(slice [][]byte) (v []byte) {
 		return v
 	}
 
-	for i := 0; i < length; i++ {
-		shift := rand.Intn(2)
-		if shift == 0 {
-			shift = -1
+	for l, r := from-1, from+1; l >= 0 || r < len(slice); l, r = l-1, r+1 {
+		if r < len(slice) && len(slice[r]) > 0 {
+			return slice[r]
 		}
-		if v = pickFromSlice(slice, from+(i+1)*shift); len(v) > 0 {
-			return v
+		if l >= 0 && len(slice[l]) > 0 {
+			return slice[l]
 		}
-		shift = shift * -1
-		if v = pickFromSlice(slice, from+(i+1)*shift); len(v) > 0 {
-			return v
-		}
-
 	}
 	return nil
-}
-
-func pickFromSlice(slice [][]byte, i int) []byte {
-	if i < 0 || i >= len(slice) {
-		return nil
-	}
-	return slice[i]
 }
