@@ -3,9 +3,11 @@ package chd
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"math"
 	"math/big"
 	"math/rand"
+	"runtime"
 	"sort"
 	"time"
 )
@@ -34,12 +36,14 @@ type BuildOptions struct {
 	// the load factor every time it fails.
 	// Default value is true.
 	ForceBuild bool
+
+	Trials int
 }
 
 // NewBuildOptions creates build
 // options with default values.
 func NewBuildOptions() *BuildOptions {
-	return &BuildOptions{1.0, 5, true}
+	return &BuildOptions{1.0, 5, true, -1}
 }
 
 type item struct {
@@ -88,6 +92,13 @@ type hash struct {
 	h2 uint64
 }
 
+type hash256 struct {
+	h1 uint64
+	h2 uint64
+	h3 uint64
+	h4 uint64
+}
+
 type bucket struct {
 	index  uint64
 	hashes []hash
@@ -134,7 +145,20 @@ func (b *Builder) Build() (m *Map, err error) {
 		return &Map{}, nil
 	}
 
-	rand.Seed(time.Now().UTC().UnixNano())
+	seed1, seed2 := uint64(rand.Int63()), uint64(rand.Int63())
+
+	// check for uniques first
+	unique := make(map[hash256]struct{})
+	for _, item := range b.items {
+		h1, h2, h3, h4 := spookyHash(item.key, seed1, seed2)
+		hash := hash256{h1, h2, h3, h4}
+		if _, exists := unique[hash]; exists {
+			return nil, fmt.Errorf("none unique key detected %#v", item.key)
+		}
+		unique[hash] = struct{}{}
+	}
+	unique = nil
+	runtime.GC()
 
 	// Sort items in ascending order
 	// of keys and decreasing counter
@@ -144,8 +168,13 @@ func (b *Builder) Build() (m *Map, err error) {
 	tableSize := uint64(float64(len(b.items)) / loadFactor)
 	tableSize = uint64(nearestPrime(int(tableSize)))
 
+	trial := b.opts.Trials
+
 	// Try building the map
 	for {
+
+		rand.Seed(time.Now().UTC().UnixNano())
+
 		const numTries = 3
 		for i := 0; i < numTries; i++ {
 			seed := [2]uint64{
@@ -158,9 +187,12 @@ func (b *Builder) Build() (m *Map, err error) {
 				return m, nil
 			}
 		}
-
+		trial -= 1
 		// If ForceBuild is enabled, reduce load factor and try again
 		if b.opts.ForceBuild {
+			if b.opts.Trials > 0 && trial <= 0 {
+				return nil, err
+			}
 			loadFactor *= 0.90
 
 			tableSize = uint64(float64(len(b.items)) / loadFactor)
