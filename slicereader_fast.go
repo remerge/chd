@@ -1,9 +1,10 @@
-// +build 386 amd64 arm
+// +build 386 amd64 arm arm64
 
 package chd
 
 import (
 	"encoding/binary"
+
 	"github.com/alecthomas/unsafeslice"
 )
 
@@ -32,8 +33,6 @@ func (b *sliceReader) ReadUint16Array(n uint64) []uint16 {
 	return unsafeslice.Uint16SliceFromByteSlice(b.b[b.start:b.end])
 }
 
-// Despite returning a uint64, this actually reads a uint32. All table indices
-// and lengths are stored as uint32 values.
 func (b *sliceReader) ReadInt() uint64 {
 	return uint64(binary.LittleEndian.Uint64(b.Read(8)))
 }

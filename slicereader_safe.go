@@ -1,4 +1,4 @@
-// +build !386,!amd64,!arm
+// +build !386,!amd64,!arm,!arm64
 
 package chd
 
@@ -38,5 +38,6 @@ func (b *sliceReader) ReadUint16Array(n uint64) []uint16 {
 }
 
 func (b *sliceReader) ReadInt() uint64 {
+	panic("TODO: the safe implementation is currently broken, investigate and fix")
 	return uint64(binary.LittleEndian.Uint32(b.Read(4)))
 }
