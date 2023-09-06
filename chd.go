@@ -60,6 +60,15 @@ func (m *Map) GetRandomKey() []byte {
 	return pickRandom(m.keys)
 }
 
+func (m *Map) Values(yield func([]byte) bool) bool {
+	for _, v := range m.values {
+		if !yield(v) {
+			return false
+		}
+	}
+	return true
+}
+
 func (m *Map) getIndex(key []byte) (idx uint64) {
 	if m.length == 0 {
 		return 0

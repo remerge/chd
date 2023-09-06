@@ -103,5 +103,21 @@ func TestMap_GetRandomValue(t *testing.T) {
 			assert.True(t, len(vals) > 1)
 		})
 	}
+}
 
+func TestMap_Values(t *testing.T) {
+	b := NewBuilder(nil)
+	for i := 0; i <= 4; i++ {
+		b.Add([]byte(strconv.Itoa(i)), []byte(strconv.Itoa(i)))
+	}
+	c, err := b.Build()
+	assert.NoError(t, err)
+
+	values := []string{}
+	c.Values(func(v []byte) bool {
+		values = append(values, string(v))
+		return true
+	})
+
+	assert.ElementsMatch(t, []string{"0", "1", "2", "3", "4"}, values)
 }
