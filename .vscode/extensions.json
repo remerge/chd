@@ -1,0 +1,26 @@
+{
+  "recommendations": [
+    "golang.go",
+    "aaron-bond.better-comments",
+    "bierner.markdown-emoji",
+    "DavidAnson.vscode-markdownlint",
+    "DotJoshJohnson.xml",
+    "eamodio.gitlens",
+    "esbenp.prettier-vscode",
+    "github.vscode-github-actions",
+    "GitHub.vscode-pull-request-github",
+    "jasonnutter.vscode-codeowners",
+    "mkhl.direnv",
+    "mkhl.shfmt",
+    "ms-azuretools.vscode-docker",
+    "ms-vscode.cpptools-extension-pack",
+    "ms-vscode.makefile-tools",
+    "redhat.vscode-yaml",
+    "samuelcolvin.jinjahtml",
+    "sharat.vscode-brewfile",
+    "tamasfe.even-better-toml",
+    "timonwong.shellcheck",
+    "wholroyd.jinja",
+    "yzhang.markdown-all-in-one"
+  ]
+}

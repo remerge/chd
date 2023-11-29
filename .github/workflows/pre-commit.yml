@@ -1,0 +1,50 @@
+---
+name: pre-commit
+
+on:
+  pull_request:
+  push:
+    branches: [main, master]
+
+permissions:
+  actions: none
+  checks: none
+  contents: read
+  deployments: none
+  discussions: none
+  id-token: none
+  issues: none
+  packages: none
+  pages: none
+  pull-requests: none
+  repository-projects: none
+  security-events: none
+  statuses: none
+
+jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: "stable"
+
+      - uses: webfactory/ssh-agent@v0.6.0
+        with:
+          ssh-private-key: "${{ secrets.DEPLOY_USER_SSH_KEY }}"
+      - run: 'git config --global url."git@github.com:".insteadOf "https://github.com/"'
+
+      - name: Load envrc
+        uses: HatsuneMiku3939/direnv-action@v1
+
+      - name: Setup pre-commit
+        run: python -m pip install pre-commit
+
+      - name: Install project dependencies
+        run: make install
+
+      - name: Run pre-commit checks
+        uses: pre-commit/action@v3.0.0
