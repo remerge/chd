@@ -1,0 +1,31 @@
+---
+quiet: true
+compact: false
+
+skip-check:
+  # https://github.com/bridgecrewio/checkov/issues/5286
+  - CKV_TF_1
+  # do not enforce Customer Supplied Encryption Keys (CSEK)
+  - CKV_GCP_37
+  - CKV_GCP_38
+  - CKV_GCP_80
+  - CKV_GCP_81
+  - CKV_GCP_83
+  - CKV_GCP_84
+  - CKV_GCP_85
+  - CKV_GCP_90
+  - CKV_GCP_91
+  - CKV_GCP_93
+  # do not enforce vpc flow logs
+  - CKV_GCP_26
+  - CKV_GCP_61
+  # restricted default service account is ok
+  - CKV_GCP_30
+  # do not enforce bucket access log
+  - CKV_GCP_62
+  # do not enforce bucket object versioning
+  - CKV_GCP_78
+  # we want serial port console access
+  - CKV_GCP_35
+  # base64 high entropy check causes too many false positives
+  - CKV_SECRET_6

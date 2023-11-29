@@ -1,0 +1,32 @@
+---
+name: chd
+description: CHD Minimal Perfect Hash
+configVersion: 1
+typeId: OTHER
+ownerId: ari:cloud:teams::team/aa671d39-0e9e-45f1-87eb-44533a6f9f4c
+fields:
+  lifecycle: Active
+  tier: 4
+links:
+  - name: null
+    type: REPOSITORY
+    url: "https://github.com/remerge/chd"
+  - name: ""
+    type: CHAT_CHANNEL
+    url: "https://remerge.slack.com/archives/C058W7TD90U"
+  - name: ""
+    type: PROJECT
+    url: "https://remerge.atlassian.net/browse/CORE"
+  - name: ""
+    type: ON_CALL
+    url: "https://remerge.app.opsgenie.com/settings/schedule/detail/1a0808b9-5d0c-41bb-9cb8-2b86479aaeab"
+  - name: README
+    type: DOCUMENT
+    url: "https://github.com/remerge/chd#readme"
+relationships:
+  DEPENDS_ON:
+    # template
+    - ari:cloud:compass:1f02c36b-a506-45d6-bf3b-c800a6bbcfa5:component/27e24933-56f2-4b79-98cf-256bc22a164a/46894632-4cd4-405e-ab0e-f02f09ad5ac0
+labels:
+  - private
+  - golang

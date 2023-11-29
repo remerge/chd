@@ -1,0 +1,8 @@
+---
+self-hosted-runner:
+  labels:
+    - generic
+    - self-hosted
+    - nomad
+    - docker
+    - default

@@ -1,0 +1,16 @@
+---
+# Changes here will be overwritten by Copier
+_commit: v2.5.1
+_src_path: gh:remerge/template
+is_golang_library: true
+project_id: chd
+project_license: private
+project_name: CHD Minimal Perfect Hash
+project_owner: core
+project_type: default
+use_ansible: false
+use_consul: false
+use_golang: true
+use_nomad: false
+use_python: false
+use_terraform: false
