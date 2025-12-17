@@ -1,7 +1,6 @@
 package chd
 
 import (
-	"reflect"
 	"unsafe"
 )
 
@@ -194,21 +193,15 @@ func spookyHash(message []byte, seed1, seed2 uint64) (uint64, uint64, uint64, ui
 }
 
 func uint64SliceFromByteSlice(bytes []byte) []uint64 {
-	sh := &reflect.SliceHeader{}
-	sh.Cap = cap(bytes) / 8
-	sh.Len = len(bytes) / 8
-	sh.Data = (uintptr)(unsafe.Pointer(&bytes[0]))
-	data := *(*[]uint64)(unsafe.Pointer(sh))
-
-	return data
+	if len(bytes) == 0 {
+		return nil
+	}
+	return unsafe.Slice((*uint64)(unsafe.Pointer(&bytes[0])), len(bytes)/8)
 }
 
 func uint32SliceFromByteSlice(bytes []byte) []uint32 {
-	sh := &reflect.SliceHeader{}
-	sh.Cap = cap(bytes) / 4
-	sh.Len = len(bytes) / 4
-	sh.Data = (uintptr)(unsafe.Pointer(&bytes[0]))
-	data := *(*[]uint32)(unsafe.Pointer(sh))
-
-	return data
+	if len(bytes) == 0 {
+		return nil
+	}
+	return unsafe.Slice((*uint32)(unsafe.Pointer(&bytes[0])), len(bytes)/4)
 }
