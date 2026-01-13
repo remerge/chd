@@ -1,10 +1,9 @@
 module github.com/remerge/chd
 
-go 1.21
+go 1.22
 
 require (
 	github.com/alecthomas/unsafeslice v0.2.0
-	github.com/remerge/go-xorshift v0.0.0-20231129160643-2db0e285f2b3
 	github.com/stretchr/testify v1.8.4
 )
 

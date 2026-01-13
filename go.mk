@@ -1,19 +1,17 @@
-GO_VERSION := 1.21
-
 SHADOW_LINTER := golang.org/x/tools/go/analysis/passes/shadow/cmd/shadow
-SHADOW_LINTER_VERSION := v0.13.0
+SHADOW_LINTER_VERSION := v0.30.0
 
-GOIMPORTS_LINTER_VERSION := v0.13.0
+GOIMPORTS_LINTER_VERSION := v0.30.0
 GOIMPORTS_LINTER := golang.org/x/tools/cmd/goimports
 
-REVIVE_LINTER_VERSION := v1.3.3
+REVIVE_LINTER_VERSION := v1.6.1
 REVIVE_LINTER := github.com/mgechev/revive
 
 
 .PHONY: go-update
 go-update:: ## update Go modules
-	@go get -u -x ./... 2>&1 | grep -vP '^(#|mkdir|cd|\d\.\d\d\ds #)' || :
-	@go mod tidy -v -x -go $(GO_VERSION)
+	go get -u -x ./... 2>&1 | grep -vP '^(#|mkdir|cd|\d\.\d\d\ds #)' || :
+	go mod tidy -v -x
 update:: go-update
 
 .PHONY: go-build
@@ -127,7 +125,7 @@ watch: $(TOOLS)/github.com/cespare/reflex
 # Use "GOFMT_EXCLUDES" to exclude files from gofmt and goimports.
 # Use "VET_FLAGS" to define vet linter flags.
 
-lint:: .lint-mod-tidy .lint-fmt .lint-goimports .lint-revive .lint-fix ## run all linters
+lint:: .lint-mod-tidy .lint-fmt .lint-goimports .lint-vet .lint-shadow .lint-revive .lint-fix ## run all linters
 
 .lint-fmt: $(GOFMT_SOURCES) ## compare gofmt and goimports output
 	@test -z "$(GOFMT_SOURCES)" || DIFF=`gofmt -s -d $(GOFMT_SOURCES)` && test -z "$$DIFF" || echo "$$DIFF" && test -z "$$DIFF"
@@ -148,7 +146,7 @@ REVIVE_CONFIG = $(wildcard revive.toml)
 	$(TOOLS)/$< -config $(REVIVE_CONFIG) -formatter friendly -exclude ./vendor/... $(REVIVELINTER_EXCLUDES) ./...
 
 .lint-fix: $(GO_SOURCES) ## run fix
-	@DIFF=`go tool fix -diff $^` && test -z "$$DIFF" || echo "$$DIFF" && test -z "$$DIFF"
+	@DIFF=`go tool fix -go=go$$(grep '^go ' < go.mod | awk '{print $$2}') -diff $^` && test -z "$$DIFF" || echo "$$DIFF" && test -z "$$DIFF"
 
 .lint-mod-tidy:	## check go mod tidy is applied
 # clean up from the last run

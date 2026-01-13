@@ -212,7 +212,7 @@ func (b *Builder) build(
 	items []item) (*Map, error) {
 
 	nbuckets := uint64(len(items)/bucketSize) + 1
-	buckets := make(buckets, nbuckets)
+	bucketSlice := make(buckets, nbuckets)
 	hashIdx := make([]uint64, nbuckets)
 
 	// Calculate hashes and put them into their designated buckets
@@ -222,29 +222,29 @@ func (b *Builder) build(
 
 		h2 %= tableSize
 		h3 %= tableSize
-		hash := hash{h2, h3}
+		hashStruct := hash{h2, h3}
 
 		items[i].h1 = h1
 		items[i].h2 = h2
 		items[i].h3 = h3
 
 		bidx := h1 % nbuckets
-		buckets[bidx].index = bidx
-		buckets[bidx].hashes = append(buckets[bidx].hashes, hash)
+		bucketSlice[bidx].index = bidx
+		bucketSlice[bidx].hashes = append(bucketSlice[bidx].hashes, hashStruct)
 	}
 
 	// Sort buckets in decreasing size
-	sort.Sort(buckets)
+	sort.Sort(bucketSlice)
 
 	maxHashIdx := uint64(min(tableSize*tableSize, 1<<20))
 	occupied := make([]bool, int(tableSize))
-	indices := make([]uint64, 0, len(buckets[0].hashes))
+	indices := make([]uint64, 0, len(bucketSlice[0].hashes))
 
 	// Process buckets and populate table
 	var d0, d1 uint64
 	var idx uint64
 	var hidx uint64
-	for _, b := range buckets {
+	for _, b := range bucketSlice {
 		if len(b.hashes) == 0 {
 			continue
 		}
@@ -325,12 +325,4 @@ func nearestPrime(num int) int {
 	}
 
 	return num
-}
-
-func min(a, b uint64) uint64 {
-	if a < b {
-		return a
-	}
-
-	return b
 }

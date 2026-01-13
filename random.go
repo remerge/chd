@@ -1,12 +1,12 @@
 package chd
 
 import (
-	rand "github.com/remerge/go-xorshift"
+	"math/rand/v2"
 )
 
 func pickRandom(slice [][]byte) (v []byte) {
 	length := len(slice)
-	from := rand.Intn(length)
+	from := rand.IntN(length)
 	v = slice[from]
 	if len(v) > 0 {
 		return v
