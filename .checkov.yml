@@ -2,6 +2,9 @@
 quiet: true
 compact: false
 
+skip-path:
+  - vendor
+
 skip-check:
   # https://github.com/bridgecrewio/checkov/issues/5286
   - CKV_TF_1
@@ -29,3 +32,5 @@ skip-check:
   - CKV_GCP_35
   # base64 high entropy check causes too many false positives
   - CKV_SECRET_6
+  # allow usage of default namespace in kubernetes
+  - CKV_K8S_21

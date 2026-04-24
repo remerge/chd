@@ -41,6 +41,10 @@ update:: ## update environment and dependencies
 generate:: ## generate documentation, configuration, schemas, etc
 	@:
 
+.PHONY: format
+format:: ## run formatters on source code
+	@:
+
 .PHONY: check
 check:: ## run formatters and linters
 	@:
@@ -51,6 +55,10 @@ test:: ## run unit and integration tests
 
 .PHONY: build
 build:: ## run build steps and create artifact
+	@:
+
+.PHONY: run
+run:: ## run build artifact locally in development mode
 	@:
 
 .PHONY: clean
@@ -86,15 +94,33 @@ update:: copier-update
 pre-commit-install: ## install pre-commit hook
 	pre-commit install -t pre-commit -t prepare-commit-msg -t commit-msg
 
+.PHONY: pre-commit-format
+pre-commit-format: ## run pre commit hooks
+pre-commit-format: pre-commit-check
+format:: pre-commit-format
+
 .PHONY: pre-commit-check
 pre-commit-check: ## run pre commit hooks
 	pre-commit run --all-files
 check:: pre-commit-check
 
 .PHONY: pre-commit-clean
-pre-commit-clean: ## remove pre-commit and cached repositories
+pre-commit-clean: ## remove pre-commit hook
 	pre-commit uninstall
-	pre-commit clean
 clean:: pre-commit-clean
 
 -include *.mk
+
+## legacy compatibility targets
+
+.PHONY: dep
+dep: install
+
+.PHONY: gen
+gen: generate
+
+.PHONY: fmt
+fmt: format
+
+.PHONY: lint
+lint: check

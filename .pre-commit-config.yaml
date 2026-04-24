@@ -1,80 +1,83 @@
 ---
 default_stages:
-  - commit
+  - pre-commit
 
 default_install_hook_types:
   - commit-msg
   - pre-commit
   - prepare-commit-msg
 
+default_language_version:
+  python: python3.14
+
 repos:
   # https://github.com/pre-commit/pre-commit-hooks/tags
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: "v4.5.0"
+    rev: "v6.0.0"
     hooks:
       - id: check-added-large-files
       - id: check-case-conflict
       - id: check-executables-have-shebangs
-      - id: check-json
       - id: check-merge-conflict
       - id: check-shebang-scripts-are-executable
       - id: check-symlinks
-      - id: check-toml
       - id: check-vcs-permalinks
-      - id: check-xml
-      - id: check-yaml
       - id: destroyed-symlinks
-      - id: detect-private-key
       - id: end-of-file-fixer
       - id: fix-byte-order-marker
       - id: forbid-submodules
       - id: trailing-whitespace
-        exclude: "^.gitignore$"
+        exclude: "^\\.gitignore$"
 
-  # https://github.com/pre-commit/mirrors-prettier/tags
-  - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: "v3.0.3"
+  # https://github.com/prettier/prettier/tags
+  - repo: local
     hooks:
       - id: prettier
+        name: prettier
+        entry: prettier --write --list-different --ignore-unknown
+        language: node
+        types: [text]
         exclude: "^project/"
+        additional_dependencies:
+          - "prettier@3.8.3"
 
   # https://github.com/igorshubovych/markdownlint-cli/tags
   - repo: https://github.com/igorshubovych/markdownlint-cli
-    rev: "v0.37.0"
+    rev: "v0.48.0"
     hooks:
       - id: markdownlint-fix
         name: markdownlint
 
   # https://github.com/adrienverge/yamllint/tags
   - repo: https://github.com/adrienverge/yamllint
-    rev: "v1.32.0"
+    rev: "v1.38.0"
     hooks:
       - id: yamllint
         entry: yamllint --strict
 
   # https://github.com/pecigonzalo/pre-commit-shfmt/tags
   - repo: https://github.com/pecigonzalo/pre-commit-shfmt
-    rev: "v2.1.0"
+    rev: "v2.2.0"
     hooks:
       - id: shell-fmt-go
 
   # https://github.com/koalaman/shellcheck-precommit/tags
   - repo: https://github.com/koalaman/shellcheck-precommit
-    rev: "v0.9.0"
+    rev: "v0.11.0"
     hooks:
       - id: shellcheck
         name: shellcheck
 
   # https://github.com/rhysd/actionlint/tags
   - repo: https://github.com/rhysd/actionlint
-    rev: "v1.6.26"
+    rev: "v1.7.12"
     hooks:
       - id: actionlint-docker
         name: actionlint
 
   # https://github.com/bridgecrewio/checkov/tags
   - repo: https://github.com/bridgecrewio/checkov
-    rev: "3.0.24"
+    rev: "3.2.524"
     hooks:
       - id: checkov
         name: checkov
@@ -86,18 +89,22 @@ repos:
     hooks:
       - id: gitlint
 
-  # https://github.com/get-woke/woke/tags
-  - repo: https://github.com/get-woke/woke
-    rev: "v0.19.0"
+  # https://github.com/golangci/golangci-lint/tags
+  - repo: https://github.com/golangci/golangci-lint
+    rev: "v2.11.4"
     hooks:
-      - id: woke-from-source
-        args: [--config=.woke.yaml]
+      - id: golangci-lint
+        args: [--config=.golangci.yml]
+        verbose: true
+      - id: golangci-lint-fmt
+        args: [--config=.golangci.yml]
+        verbose: true
 
   - repo: local
     hooks:
-      - id: lint
-        name: Run Linters
-        entry: make lint
+      - id: go-check
+        name: go-check
+        entry: make go-check
         language: system
         always_run: true
         verbose: true
