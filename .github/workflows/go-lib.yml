@@ -4,15 +4,15 @@ name: go-lib
 on:
   pull_request:
   push:
-    branches: [main, master, production]
+    branches: [main, master]
 
 permissions:
-  actions: none
+  actions: read
   checks: none
   contents: read
-  deployments: none
+  deployments: write
   discussions: none
-  id-token: none
+  id-token: write
   issues: none
   packages: none
   pages: none
@@ -21,8 +21,14 @@ permissions:
   security-events: none
   statuses: none
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   go-checks:
     uses: remerge/workflows/.github/workflows/go-checks.yml@main
+    with:
+      lint-target: go-check
     secrets:
       ssh_key: ${{ secrets.DEPLOY_USER_SSH_KEY }}
