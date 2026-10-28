@@ -11,10 +11,6 @@ CI_COMMIT ?= $(or $(GITHUB_SHA), $(DEV_COMMIT))
 CI_REPO ?= $(or $(GITHUB_REPOSITORY), $(PROJECT_REPO))
 CI_NUM ?= $(or $(GITHUB_RUN_ID), $(DEV_WHOAMI))
 
-# Base URL of our Google Cloud Artifact Registry for Docker images being
-# deployed as Nomad service jobs by GitHub Actions workflows or local divert
-SERVICES_ARTIFACT_REGISTRY := europe-west4-docker.pkg.dev/artifact-registry-ff9b/services/
-
 # Use bash instead of sh as the shell to run commands
 # https://www.gnu.org/software/make/manual/html_node/Choosing-the-Shell.html
 SHELL = bash

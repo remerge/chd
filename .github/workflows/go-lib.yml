@@ -7,12 +7,12 @@ on:
     branches: [main, master]
 
 permissions:
-  actions: read
+  actions: none
   checks: none
   contents: read
-  deployments: write
+  deployments: none
   discussions: none
-  id-token: write
+  id-token: none
   issues: none
   packages: none
   pages: none

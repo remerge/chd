@@ -11,7 +11,7 @@ update:: go-update
 
 .PHONY: go-build
 go-build: ## build a Go binary matching the local architecture
-go-build: .build/$(.BIN_LOCAL)
+go-build: local
 build:: go-build
 
 .PHONY: go-clean
@@ -27,21 +27,6 @@ GO_SOURCES = $(shell find . -type f \( -iname '*.go' \) -not \( -path "./vendor/
 export GO111MODULE = on
 export CGO_ENABLED = 0
 export GOPRIVATE ?= github.com/remerge/*
-
-GIT_REMOTE ?= origin
-BASE_REF ?= $(if $(GIT_BASE_REF),$(GIT_BASE_REF),$(shell \
-  ref=$$(git symbolic-ref --quiet "refs/remotes/$(GIT_REMOTE)/HEAD" 2>/dev/null \
-    | sed 's|^refs/remotes/||'); \
-  if [ -n "$$ref" ]; then \
-    echo "$$ref"; \
-  else \
-    echo "__UNRESOLVED__"; \
-  fi \
-))
-
-BASE_REMOTE = $(firstword $(subst /, ,$(BASE_REF)))
-BASE_BRANCH = $(patsubst $(BASE_REMOTE)/%,%,$(BASE_REF))
-export BASE_REF BASE_BRANCH
 
 # do not use automatic targets
 .SUFFIXES:
@@ -112,9 +97,9 @@ watch: $(TOOLS)/github.com/cespare/reflex
 
 # *lint* target will run golang-ci.
 
-GO_LOCAL_CHECK_TARGETS=.lint-mod-tidy .lint-golangci .lint-dm
+GO_LOCAL_CHECK_TARGETS=.lint-mod-tidy .lint-golangci
 # for CI, `golangci` linter is called within the job
-GO_CI_CHECK_TARGETS=.lint-mod-tidy .lint-dm
+GO_CI_CHECK_TARGETS=.lint-mod-tidy
 go-check:
 ifeq ($(GITHUB_JOB),pre-commit)
 	$(MAKE) $(GO_CI_CHECK_TARGETS)
@@ -146,13 +131,6 @@ endif
 .NOTPARALLEL: .lint-mod-tidy
 .PHONY: .lint-mod-tidy
 
-.lint-dm: ## check if dm.SchemaVersion is up-to-date
-	@if [ -x ./bin/check_dm_schema_version.sh ]; then \
-		./bin/check_dm_schema_version.sh; \
-	else \
-		echo "Skipping dm schema version check: ./bin/check_dm_schema_version.sh not present"; \
-	fi
-
 # Building binaries
 
 LDIMPORT=github.com/remerge/go-service
@@ -169,18 +147,3 @@ dist: .build/$(PROJECT_ID).linux.amd64	## linux amd64 binary
 .BIN_LOCAL = $(PROJECT_ID).$(shell go env GOOS).$(shell go env GOARCH)
 
 local: .build/$(.BIN_LOCAL)
-
-# Deployment
-
-release:
-	git push origin master:production
-
-.make_divert_deprecation_message:
-	@echo "Diverting via Makefile is no longer supported."
-	@echo "Install and use divert tool instead: https://github.com/remerge/divert/tree/main#installation"
-
-divert: .make_divert_deprecation_message
-divert-stop: .make_divert_deprecation_message
-divert-journal: .make_divert_deprecation_message
-divert-status: .make_divert_deprecation_message
-divert-list: .make_divert_deprecation_message

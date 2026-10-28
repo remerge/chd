@@ -50,9 +50,6 @@ jobs:
         with:
           python-version: "3.14"
 
-      # https://github.com/actions/setup-node/issues/531
-      - run: corepack enable
-
       - name: Setup NodeJS
         # https://github.com/actions/setup-node/releases
         uses: actions/setup-node@v7.0.0
