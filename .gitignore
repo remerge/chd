@@ -1021,3 +1021,8 @@ id_*
 
 # Always ignore Ansible lock files
 .ansible/.lock
+
+# override.tf holds the Terraform providers that only this repository needs (see
+# terraform.tf), so it belongs in version control even though the default
+# Terraform ignore rules exclude override files.
+!/override.tf
