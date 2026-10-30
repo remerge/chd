@@ -22,7 +22,7 @@ clean:: go-clean
 
 
 # all go sources in build tree excluding vendor
-GO_SOURCES = $(shell find . -type f \( -iname '*.go' \) -not \( -path "./vendor/*" -path ".*" \))
+GO_SOURCES ?= $(shell find . -type f \( -iname '*.go' \) -not \( -path "./vendor/*" -path ".*" \))
 
 export GO111MODULE = on
 export CGO_ENABLED = 0
@@ -30,6 +30,11 @@ export GOPRIVATE ?= github.com/remerge/*
 
 # do not use automatic targets
 .SUFFIXES:
+
+# Prerequisites written as $$(VAR) are expanded when make builds the target,
+# not when it reads this file, so local.mk (included last) can still change
+# GO_SOURCES and GENERATE_SOURCES.
+.SECONDEXPANSION:
 
 .PHONY: gen
 
@@ -51,7 +56,7 @@ $(TOOLS)/%:
 
 GENERATE_SOURCES ?=
 
-generate:: $(GENERATE_SOURCES)
+generate:: $$(GENERATE_SOURCES)
 	go generate ./...
 	$(MAKE) fmt
 
@@ -70,22 +75,22 @@ TESTS ?= .
 TEST_TAGS ?=
 TEST_ARGS ?=
 
-test:: $(GO_SOURCES) go.mod	## regular tests
+test:: $$(GO_SOURCES) go.mod	## regular tests
 	go test $(TEST_ARGS) -tags="$(TEST_TAGS)" -timeout=$(TEST_TIMEOUT) -run=$(TESTS) ./...
 
-race:: $(GO_SOURCES) go.mod	## race tests
+race:: $$(GO_SOURCES) go.mod	## race tests
 	CGO_ENABLED=1 go test  $(TEST_ARGS) -tags="$(TEST_TAGS)" -race -timeout=$(TEST_TIMEOUT) -run=$(TESTS) ./...
 
-bench:: $(GO_SOURCES) go.mod	## benchmarks
+bench:: $$(GO_SOURCES) go.mod	## benchmarks
 	go test  $(TEST_ARGS) -tags="$(TEST_TAGS)" -run=^$ -bench=$(TESTS) -benchmem -cpu 32 ./...
 
-test-nocache:: $(GO_SOURCES) go.mod
+test-nocache:: $$(GO_SOURCES) go.mod
 	go test  $(TEST_ARGS) -tags="$(TEST_TAGS)" -count=1 -timeout=$(TEST_TIMEOUT) -run=$(TESTS) ./...
 
-race-nocache:: $(GO_SOURCES) go.mod
+race-nocache:: $$(GO_SOURCES) go.mod
 	CGO_ENABLED=1 go test  $(TEST_ARGS) -tags="$(TEST_TAGS)" -race -count=1 -timeout=$(TEST_TIMEOUT) -run=$(TESTS) ./...
 
-escape: $(GO_SOURCES) go.mod ## builds with escape analysis active
+escape: $$(GO_SOURCES) go.mod ## builds with escape analysis active
 	go build -v -gcflags '-m -m -l -e' ./...
 
 
@@ -97,9 +102,9 @@ watch: $(TOOLS)/github.com/cespare/reflex
 
 # *lint* target will run golang-ci.
 
-GO_LOCAL_CHECK_TARGETS=.lint-mod-tidy .lint-golangci
+GO_LOCAL_CHECK_TARGETS ?= .lint-mod-tidy .lint-golangci
 # for CI, `golangci` linter is called within the job
-GO_CI_CHECK_TARGETS=.lint-mod-tidy
+GO_CI_CHECK_TARGETS ?= .lint-mod-tidy
 go-check:
 ifeq ($(GITHUB_JOB),pre-commit)
 	$(MAKE) $(GO_CI_CHECK_TARGETS)
@@ -117,15 +122,15 @@ endif
 	rm -f /tmp/$(PROJECT_ID).go.mod.tidy.bak /tmp/$(PROJECT_ID).go.sum.tidy.bak /tmp/$(PROJECT_ID).go.mod.tidy /tmp/$(PROJECT_ID).go.sum.tidy
 # backup the current files
 	cp go.mod /tmp/$(PROJECT_ID).go.mod.tidy.bak
-	cp go.sum /tmp/$(PROJECT_ID).go.sum.tidy.bak
+	if [ -e go.sum ]; then cp go.sum /tmp/$(PROJECT_ID).go.sum.tidy.bak; fi
 # let go do its magic
 	go mod tidy
 # move cleaned files out of the way
 	mv go.mod /tmp/$(PROJECT_ID).go.mod.tidy
-	mv go.sum /tmp/$(PROJECT_ID).go.sum.tidy
+	if [ -e go.sum ]; then mv go.sum /tmp/$(PROJECT_ID).go.sum.tidy; fi
 # get original files back
 	mv /tmp/$(PROJECT_ID).go.mod.tidy.bak go.mod
-	mv /tmp/$(PROJECT_ID).go.sum.tidy.bak go.sum
+	if [ -e /tmp/$(PROJECT_ID).go.sum.tidy.bak ]; then mv /tmp/$(PROJECT_ID).go.sum.tidy.bak go.sum; fi
 # compare cleaned and original files
 	diff go.mod /tmp/$(PROJECT_ID).go.mod.tidy
 .NOTPARALLEL: .lint-mod-tidy
@@ -135,12 +140,14 @@ endif
 
 LDIMPORT=github.com/remerge/go-service
 LDFLAGS=-X $(LDIMPORT).CodeVersion=$(CI_COMMIT) -X $(LDIMPORT).CodeBuild=$(CI_REPO)\#$(CI_NUM)@$(shell date -u +%FT%TZ)
+# Package to build, relative to the module root; set MAIN to empty when the
+# main package is the module root itself.
 MAIN ?= main
 
 # NOTE: logically pull out binaries from source tree
-.build/$(PROJECT_ID).%: $(GO_SOURCES) go.mod
+.build/$(PROJECT_ID).%: $$(GO_SOURCES) go.mod
 	mkdir -p $(@D)
-	CGO_ENABLED=0 GOOS=$(basename $*) GOARCH=$(patsubst .%,%,$(suffix $*)) go build -trimpath -o $@ -ldflags "$(LDFLAGS)" $(PROJECT_REPO)/$(MAIN)
+	CGO_ENABLED=0 GOOS=$(basename $*) GOARCH=$(patsubst .%,%,$(suffix $*)) go build -trimpath -o $@ -ldflags "$(LDFLAGS)" $(PROJECT_REPO)$(if $(MAIN),/$(MAIN))
 
 dist: .build/$(PROJECT_ID).linux.amd64	## linux amd64 binary
 

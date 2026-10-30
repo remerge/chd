@@ -99,7 +99,7 @@ repos:
 
   # https://github.com/golangci/golangci-lint/tags
   - repo: https://github.com/golangci/golangci-lint
-    rev: "v2.14.0"
+    rev: "v2.15.0"
     hooks:
       - id: golangci-lint
         args: [--config=.golangci.yml]
@@ -118,3 +118,9 @@ repos:
         always_run: true
         verbose: true
         pass_filenames: false
+
+  # Repository hooks: add this repository's own hooks below this comment.
+  # The template only ever adds or changes hooks above it, so copier update
+  # carries everything below it over without conflicts. Paths that no hook
+  # should touch (vendored or generated files) go into a top-level
+  # `exclude:` regex at the very end of the file, after these hooks.

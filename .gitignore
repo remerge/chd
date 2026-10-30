@@ -986,6 +986,20 @@ terraform.rc
 .tools/
 cache/
 
+# Local caches of tools run from the repository
+.gocache/
+.pre-commit-cache/
+
+# Local data, run and release output at the repository root
+/data/
+/runs/
+release/
+
+# Local IDE, database and mise files
+.idea/
+*.db
+mise.local.toml
+
 # Ignore SSH keys
 id_*
 *.key
