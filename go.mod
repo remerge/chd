@@ -1,8 +1,6 @@
 module github.com/remerge/chd
 
-go 1.22
-
-toolchain go1.26.10
+go 1.27.3
 
 require (
 	github.com/alecthomas/unsafeslice v0.2.0
