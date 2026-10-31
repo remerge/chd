@@ -1,6 +1,6 @@
 ---
 # Changes here will be overwritten by Copier
-_commit: v2.107.0-30-g9ce53ad
+_commit: v2.107.0-32-g9379ed9
 _src_path: gh:remerge/template
 excluded_files: []
 go_checks_with:

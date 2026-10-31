@@ -9,6 +9,10 @@ default_install_hook_types:
 
 default_language_version:
   python: python3.14
+  # Go that builds the Go-based hooks (golangci-lint). It must be at least the
+  # go directive in go.mod, or golangci-lint refuses to load the module, and a
+  # change here also invalidates CI's cached hook environments.
+  golang: "1.27.3"
 
 # the hooks that rewrite files carry `alias: format'; everything else is a check.
 # `make format' runs the aliased set only, `make check' still runs everything.
