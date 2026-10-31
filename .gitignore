@@ -1026,6 +1026,10 @@ id_*
 # https://github.com/github/gitignore/pull/3619
 !.envrc
 
+# .envrc.local holds this repository's own direnv settings (see .envrc), so it
+# belongs in version control even though the Node rules ignore .env*.local.
+!/.envrc.local
+
 # The Terraform root is the repo root. Child modules must not carry their own
 # lock file — it is never consulted when the module is consumed, and a stray
 # `terraform init`/`validate` inside a module would otherwise create one. Ignore
