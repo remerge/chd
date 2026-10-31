@@ -1,2 +1,4 @@
-# auto generated
 .copier-answers.yml
+.copier-vars.yml
+.github/prompts/
+CHANGELOG.md

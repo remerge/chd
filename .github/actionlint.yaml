@@ -1,6 +1,7 @@
 ---
 self-hosted-runner:
   labels:
+    - blacksmith-*
     - generic
     - self-hosted
     - nomad
