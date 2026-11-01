@@ -46,13 +46,13 @@ jobs:
           git config --global advice.detachedHead false
 
       - name: Setup Python
-        uses: actions/setup-python@v7.0.0
+        uses: actions/setup-python@v7.1.0
         with:
           python-version: "3.14"
 
       - name: Setup NodeJS
         # https://github.com/actions/setup-node/releases
-        uses: actions/setup-node@v7.0.0
+        uses: actions/setup-node@v7.1.0
         with:
           node-version: "24.20.0"
 
@@ -64,7 +64,7 @@ jobs:
 
       - name: Load envrc
         # https://github.com/HatsuneMiku3939/direnv-action/releases
-        uses: HatsuneMiku3939/direnv-action@v1.4.7
+        uses: HatsuneMiku3939/direnv-action@v1.4.9
 
       - name: Install project dependencies
         run: make install

@@ -1,3 +1,12 @@
 ---
 # MD013/line-length
 MD013: false
+# MD024/no-duplicate-heading — allow the same subhead (### Fixed, ### Added,
+# etc.) under different versions in CHANGELOG.md, per Keep a Changelog.
+MD024:
+  siblings_only: true
+# MD025/single-title — pages may carry both a YAML `title:` front matter field
+# and a body `# Title` H1. Disable the front matter title heuristic so the body
+# H1 is accepted.
+MD025:
+  front_matter_title: ""
