@@ -83,7 +83,7 @@ nm.Read(r)
 
 ## API Reference
 
-Godoc documentation can be found [here][2].
+See the [Godoc documentation][2].
 
 [2]: https://godoc.org/github.com/robskie/chd
 
