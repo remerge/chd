@@ -28,7 +28,5 @@ concurrency:
 jobs:
   go-checks:
     uses: remerge/workflows/.github/workflows/go-checks.yml@main
-    with:
-      lint-target: go-check
     secrets:
       ssh_key: ${{ secrets.DEPLOY_USER_SSH_KEY }}
