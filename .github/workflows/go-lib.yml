@@ -27,6 +27,58 @@ concurrency:
 
 jobs:
   go-checks:
-    uses: remerge/workflows/.github/workflows/go-checks.yml@main
-    secrets:
-      ssh_key: ${{ secrets.DEPLOY_USER_SSH_KEY }}
+    runs-on: blacksmith-4vcpu-ubuntu-2404
+    steps:
+      - name: Checkout repository
+        # https://github.com/actions/checkout/releases
+        uses: actions/checkout@v7.0.1
+
+      - name: Setup SSH agent
+        # https://github.com/webfactory/ssh-agent/releases
+        uses: webfactory/ssh-agent@v0.10.0
+        with:
+          ssh-private-key: "${{ secrets.DEPLOY_USER_SSH_KEY }}"
+
+      - name: Setup Git
+        run: |
+          curl -f -sL --retry 5 --retry-delay 1 https://api.github.com/meta | jq -r '"github.com "+.ssh_keys[]' >> ~/.ssh/known_hosts
+          git config --global url."git@github.com:".insteadOf "https://github.com/"
+          git config --global advice.detachedHead false
+
+      - name: Setup Go
+        # https://github.com/actions/setup-go/releases
+        # Caches the module and build caches, keyed on go.sum.
+        uses: actions/setup-go@v7.0.0
+        with:
+          go-version-file: go.mod
+
+      # `make gen` formats through pre-commit, so the check needs it too.
+      - name: Setup Python
+        # https://github.com/actions/setup-python/releases
+        uses: actions/setup-python@v7.1.0
+        with:
+          python-version: "3.14"
+
+      - name: Install pre-commit
+        run: python -m pip install pre-commit
+
+      - name: Cache pre-commit environments
+        # https://github.com/actions/cache/releases
+        uses: actions/cache@v6.1.0
+        with:
+          path: ~/.cache/pre-commit
+          key: "${{ runner.os }}-pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}"
+
+      - name: Check generated files
+        run: make gen && git diff --exit-code
+
+      - name: Start services
+        if: hashFiles('docker-compose.yml') != ''
+        run: docker compose up -d --build && sleep 1
+
+      - name: Run tests
+        run: make race-nocache
+
+      - name: Stop services
+        if: always() && hashFiles('docker-compose.yml') != ''
+        run: docker compose down

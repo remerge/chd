@@ -89,7 +89,7 @@ repos:
 
   # https://github.com/bridgecrewio/checkov/tags
   - repo: https://github.com/bridgecrewio/checkov
-    rev: "3.4.0"
+    rev: "3.4.3"
     hooks:
       - id: checkov
         name: checkov
